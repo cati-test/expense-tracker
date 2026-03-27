@@ -35,6 +35,12 @@ export function useExpenses() {
     setExpenses((prev) => [newExpense, ...prev]);
   };
 
+  const editExpense = (id: string, updates: Omit<Expense, "id">) => {
+    setExpenses((prev) =>
+      prev.map((e) => (e.id === id ? { ...updates, id } : e))
+    );
+  };
+
   const deleteExpense = (id: string) => {
     setExpenses((prev) => prev.filter((e) => e.id !== id));
   };
@@ -49,9 +55,9 @@ export function useExpenses() {
     {}
   );
 
+  const now = new Date();
   const thisMonthExpenses = expenses.filter((e) => {
-    const now = new Date();
-    const expDate = new Date(e.date);
+    const expDate = new Date(e.date + "T00:00:00");
     return (
       expDate.getFullYear() === now.getFullYear() &&
       expDate.getMonth() === now.getMonth()
@@ -63,14 +69,21 @@ export function useExpenses() {
     0
   );
 
+  // Derive all unique year-month strings from expenses, sorted descending
+  const availableMonths = Array.from(
+    new Set(expenses.map((e) => e.date.slice(0, 7)))
+  ).sort((a, b) => b.localeCompare(a));
+
   return {
     expenses,
     loaded,
     addExpense,
+    editExpense,
     deleteExpense,
     totalAmount,
     totalByCategory,
     thisMonthTotal,
     thisMonthExpenses,
+    availableMonths,
   };
 }

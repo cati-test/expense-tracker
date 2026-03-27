@@ -1,19 +1,13 @@
 "use client";
 
 import { Card, CardBody } from "@nextui-org/react";
+import { formatCurrency } from "@/lib/format";
 
 interface Props {
   totalAmount: number;
   thisMonthTotal: number;
   totalByCategory: Record<string, number>;
   expenseCount: number;
-}
-
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(amount);
 }
 
 export default function SummaryStats({
@@ -47,7 +41,10 @@ export default function SummaryStats({
     {
       label: "Top Category",
       value: topCategory,
-      sub: topCategory !== "—" ? formatCurrency(totalByCategory[topCategory]) : "No data yet",
+      sub:
+        topCategory !== "—"
+          ? formatCurrency(totalByCategory[topCategory])
+          : "No data yet",
       color: "bg-warning-50 border-warning-200",
       valueColor: "text-warning-600",
     },

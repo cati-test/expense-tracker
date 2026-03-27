@@ -3,28 +3,15 @@
 import { Button, Chip } from "@nextui-org/react";
 import type { Expense } from "@/types/expense";
 import { CATEGORY_COLORS, CATEGORY_ICONS } from "@/types/expense";
+import { formatCurrency, formatDate } from "@/lib/format";
 
 interface Props {
   expenses: Expense[];
-  onDelete: (id: string) => void;
+  onEdit: (expense: Expense) => void;
+  onDelete: (expense: Expense) => void;
 }
 
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(amount);
-}
-
-function formatDate(dateStr: string) {
-  return new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
-export default function ExpenseList({ expenses, onDelete }: Props) {
+export default function ExpenseList({ expenses, onEdit, onDelete }: Props) {
   if (expenses.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -83,17 +70,36 @@ export default function ExpenseList({ expenses, onDelete }: Props) {
                     {expense.category}
                   </Chip>
                 </div>
-                <div className="flex items-center gap-3 flex-shrink-0">
+                <div className="flex items-center gap-2 flex-shrink-0">
                   <span className="text-lg font-semibold text-default-900">
                     {formatCurrency(expense.amount)}
                   </span>
+                  {/* Edit button */}
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    variant="light"
+                    color="default"
+                    aria-label="Edit expense"
+                    onPress={() => onEdit(expense)}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="w-4 h-4"
+                    >
+                      <path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z" />
+                    </svg>
+                  </Button>
+                  {/* Delete button */}
                   <Button
                     isIconOnly
                     size="sm"
                     variant="light"
                     color="danger"
                     aria-label="Delete expense"
-                    onPress={() => onDelete(expense.id)}
+                    onPress={() => onDelete(expense)}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
