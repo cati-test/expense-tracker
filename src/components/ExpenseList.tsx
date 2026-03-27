@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Chip } from "@nextui-org/react";
+import { Chip } from "@nextui-org/react";
 import type { Expense } from "@/types/expense";
 import { CATEGORY_COLORS, CATEGORY_ICONS } from "@/types/expense";
 import { formatCurrency, formatDate } from "@/lib/format";
@@ -75,13 +75,10 @@ export default function ExpenseList({ expenses, onEdit, onDelete }: Props) {
                     {formatCurrency(expense.amount)}
                   </span>
                   {/* Edit button */}
-                  <Button
-                    isIconOnly
-                    size="sm"
-                    variant="light"
-                    color="default"
+                  <button
                     aria-label="Edit expense"
-                    onPress={() => onEdit(expense)}
+                    onClick={() => onEdit(expense)}
+                    className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -91,15 +88,12 @@ export default function ExpenseList({ expenses, onEdit, onDelete }: Props) {
                     >
                       <path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z" />
                     </svg>
-                  </Button>
+                  </button>
                   {/* Delete button */}
-                  <Button
-                    isIconOnly
-                    size="sm"
-                    variant="light"
-                    color="danger"
+                  <button
                     aria-label="Delete expense"
-                    onPress={() => onDelete(expense)}
+                    onClick={() => onDelete(expense)}
+                    className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -113,7 +107,7 @@ export default function ExpenseList({ expenses, onEdit, onDelete }: Props) {
                         clipRule="evenodd"
                       />
                     </svg>
-                  </Button>
+                  </button>
                 </div>
               </div>
             ))}

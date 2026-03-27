@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Button, Select, SelectItem } from "@nextui-org/react";
+import { Select, SelectItem } from "@nextui-org/react";
 import { useExpenses } from "@/hooks/useExpenses";
 import ExpenseModal from "@/components/ExpenseModal";
 import DeleteConfirmModal from "@/components/DeleteConfirmModal";
@@ -51,16 +51,13 @@ export default function Home() {
     availableMonths,
   } = useExpenses();
 
-  // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [deletingExpense, setDeletingExpense] = useState<Expense | null>(null);
 
-  // Filter state
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedMonth, setSelectedMonth] = useState("All");
 
-  // Filtered expenses
   const filteredExpenses = useMemo(() => {
     return expenses.filter((e) => {
       const categoryMatch =
@@ -71,7 +68,6 @@ export default function Home() {
     });
   }, [expenses, selectedCategory, selectedMonth]);
 
-  // Category counts (based on month-filtered only, for the filter bar)
   const categoryCounts = useMemo(() => {
     const base =
       selectedMonth === "All"
@@ -83,7 +79,6 @@ export default function Home() {
     }, {});
   }, [expenses, selectedMonth]);
 
-  // Stats for the selected month (or all-time if "All")
   const statsExpenses =
     selectedMonth === "All"
       ? expenses
@@ -130,50 +125,36 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white border-b border-default-100 sticky top-0 z-10">
+      <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-2xl">💰</span>
-            <h1 className="text-xl font-bold text-default-900">
-              Expense Tracker
-            </h1>
+            <h1 className="text-xl font-bold text-gray-900">Expense Tracker</h1>
           </div>
           <div className="flex items-center gap-2">
             {expenses.length > 0 && (
-              <Button
-                variant="flat"
-                size="sm"
-                className="font-medium"
-                onPress={() => exportToCsv(filteredExpenses)}
-                startContent={
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    className="w-4 h-4"
-                  >
-                    <path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
-                    <path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
-                  </svg>
-                }
+              <button
+                onClick={() => exportToCsv(filteredExpenses)}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
               >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                  <path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
+                  <path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25 1.25v-2.5z" />
+                </svg>
                 Export CSV
-              </Button>
+              </button>
             )}
-            <Button
-              color="primary"
-              onPress={handleOpenAdd}
-              size="sm"
-              className="font-medium"
+            <button
+              onClick={handleOpenAdd}
+              className="px-4 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors"
             >
               + Add Expense
-            </Button>
+            </button>
           </div>
         </div>
       </header>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8 flex flex-col gap-8">
-        {/* Summary Stats */}
         {loaded && (
           <SummaryStats
             totalAmount={selectedMonth === "All" ? totalAmount : statsTotal}
@@ -183,21 +164,15 @@ export default function Home() {
           />
         )}
 
-        {/* Spending Chart */}
         {loaded && Object.keys(statsByCategory).length > 0 && (
-          <SpendingChart
-            totalByCategory={statsByCategory}
-            total={statsTotal}
-          />
+          <SpendingChart totalByCategory={statsByCategory} total={statsTotal} />
         )}
 
-        {/* Filters */}
         {expenses.length > 0 && (
           <div className="flex flex-col gap-4">
-            {/* Month filter */}
             {availableMonths.length > 1 && (
               <div>
-                <h2 className="text-sm font-semibold text-default-600 mb-3 uppercase tracking-wide">
+                <h2 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wide">
                   Filter by Month
                 </h2>
                 <Select
@@ -219,10 +194,8 @@ export default function Home() {
                 </Select>
               </div>
             )}
-
-            {/* Category filter */}
             <div>
-              <h2 className="text-sm font-semibold text-default-600 mb-3 uppercase tracking-wide">
+              <h2 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wide">
                 Filter by Category
               </h2>
               <CategoryFilter
@@ -234,11 +207,10 @@ export default function Home() {
           </div>
         )}
 
-        {/* Expense List */}
         <div>
           {expenses.length > 0 && (
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-semibold text-default-600 uppercase tracking-wide">
+              <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
                 {selectedCategory === "All" ? "All Expenses" : selectedCategory}
                 {selectedMonth !== "All" && (
                   <span className="ml-1 font-normal normal-case">
@@ -246,7 +218,7 @@ export default function Home() {
                   </span>
                 )}
               </h2>
-              <span className="text-sm text-default-400">
+              <span className="text-sm text-gray-400">
                 {filteredExpenses.length}{" "}
                 {filteredExpenses.length === 1 ? "item" : "items"}
               </span>
@@ -262,7 +234,6 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Add / Edit modal */}
       <ExpenseModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -270,7 +241,6 @@ export default function Home() {
         editingExpense={editingExpense}
       />
 
-      {/* Delete confirmation modal */}
       <DeleteConfirmModal
         isOpen={!!deletingExpense}
         onClose={() => setDeletingExpense(null)}

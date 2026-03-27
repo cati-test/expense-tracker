@@ -12,37 +12,56 @@ A complete Next.js + NextUI expense tracking app with localStorage persistence.
 - **Month filter** — dropdown to view any past month (appears when data spans 2+ months)
 - **Category filter** — chip row to filter list by category
 - **CSV export** — downloads current filtered expenses as a .csv file
-- **Summary stats** — total spent, this month's total, top category (update to reflect selected month)
+- **Summary stats** — total spent, this month's total, top category (updates to reflect selected month)
 
 ### File structure
 ```
 src/
   app/
-    page.tsx          — main page, wires all state and modals together
-    layout.tsx        — root layout, NextUIProvider
-    providers.tsx     — client-side NextUIProvider wrapper
+    page.tsx               — main page, all state and event handlers
+    layout.tsx             — root layout, NextUIProvider
+    providers.tsx          — client-side NextUIProvider wrapper
   components/
-    ExpenseModal.tsx      — unified add/edit modal
-    DeleteConfirmModal.tsx — delete confirmation dialog
-    ExpenseList.tsx       — date-grouped list with edit + delete buttons
-    SummaryStats.tsx      — three stat cards at top
-    SpendingChart.tsx     — category breakdown bar chart
-    CategoryFilter.tsx    — chip-based category filter
+    AppModal.tsx           — custom CSS modal (no framer-motion, no @react-aria)
+    ExpenseModal.tsx       — add/edit form using native inputs + AppModal
+    DeleteConfirmModal.tsx — delete confirmation using AppModal
+    ExpenseList.tsx        — date-grouped list with edit + delete buttons
+    SummaryStats.tsx       — three stat cards at top
+    SpendingChart.tsx      — category breakdown bar chart
+    CategoryFilter.tsx     — chip-based category filter
   hooks/
-    useExpenses.ts    — all state, localStorage persistence, derived values
+    useExpenses.ts         — all state, localStorage persistence, derived values
   lib/
-    format.ts         — shared formatCurrency and formatDate utilities
+    format.ts              — shared formatCurrency and formatDate utilities
   types/
-    expense.ts        — Expense interface, CATEGORIES, CATEGORY_ICONS, CATEGORY_COLORS
+    expense.ts             — Expense interface, CATEGORIES, CATEGORY_ICONS, CATEGORY_COLORS
 ```
+
+## NextUI compatibility rule (React 19 / Next.js 16)
+
+**Do not use NextUI interactive components in this stack.** The following all fail silently:
+- `Button` with `onPress` — click events never fire
+- `Input` — label and placeholder overlap, component doesn't render correctly
+- `Select` (inside modals) — same rendering issues as Input
+- `Modal` / `ModalContent` — doesn't open when `isOpen` changes
+
+**What to use instead:**
+- Buttons → native `<button onClick={...}>` styled with Tailwind
+- Inputs/selects → native `<input>` / `<select>` styled with Tailwind
+- Modals → custom `AppModal` component (`fixed inset-0` backdrop, plain div panel)
+
+**What still works fine (display-only components):**
+- `Card`, `CardBody`
+- `Chip`
+- `Select` / `SelectItem` outside of modals (month filter in page.tsx)
 
 ## What's next (potential improvements)
 
-- **Backend / database** — currently all data is in localStorage; switching to a real DB (e.g. Supabase, SQLite via Prisma) would enable multi-device sync
 - **Budget tracking** — set a monthly budget per category and show progress bars toward limits
 - **Recurring expenses** — mark an expense as recurring (weekly/monthly) and auto-generate future entries
 - **Charts** — richer visualizations (monthly trend line, pie chart) using a library like Recharts
 - **Import CSV** — allow importing expenses from a CSV file
+- **Backend / database** — currently all data is in localStorage; switching to a real DB (e.g. Supabase, SQLite via Prisma) would enable multi-device sync
 - **Authentication** — user accounts so data is private and portable
 - **Dark mode** — NextUI supports it natively via ThemeProvider
 - **Tests** — no tests exist yet; add Vitest + Testing Library for unit/integration coverage
